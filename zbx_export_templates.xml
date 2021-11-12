@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.4</version>
+    <date>2021-11-12T05:50:57Z</date>
+    <groups>
+        <group>
+            <uuid>7df96b18c230490a9a0a9e2307226338</uuid>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <uuid>8b943f9d655b4d638b63600d55f609e5</uuid>
+            <template>Netscaler</template>
+            <name>Netscaler</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>963a15c83d8d433d9e104014d89d553c</uuid>
+                    <name>System</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#UPTIME},1.3.6.1.4.1.5951.4.1.1.41.17]</snmp_oid>
+                    <key>netscaler.system.discovery</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>6e46190f2e924dd09076efdca2582713</uuid>
+                            <name>System Uptime</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>NS-ROOT-MIB::sysStatisticsTime.0</snmp_oid>
+                            <key>netscaler.system.uptime</key>
+                            <tags>
+                                <tag>
+                                    <tag>netscaler</tag>
+                                    <value>uptime</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <uuid>42acaf8d0b7748f0be9e46efe5245bbd</uuid>
+                    <name>LB VIPs</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#VSVRNAME},1.3.6.1.4.1.5951.4.1.3.1.1.1,{#VSVRHEALTH},1.3.6.1.4.1.5951.4.1.3.1.1.62,{#VSVRIPADDRESS},1.3.6.1.4.1.5951.4.1.3.1.1.2,{#VSVRPORT},1.3.6.1.4.1.5951.4.1.3.1.1.3,{#VSVRTYPE},1.3.6.1.4.1.5951.4.1.3.1.1.4,{#VSVRSTATE},1.3.6.1.4.1.5951.4.1.3.1.1.5]</snmp_oid>
+                    <key>netscaler.vs.health</key>
+                    <delay>1h</delay>
+                    <description>discovery from NS-ROOT-MIB
+
+
+discovery[{#VSVRNAME},1.3.6.1.4.1.5951.4.1.3.1.1.1,{#VSVRIPADDRESS},1.3.6.1.4.1.5951.4.1.3.1.1.2,{#VSVRPORT},1.3.6.1.4.1.5951.4.1.3.1.1.3,{#VSVRTYPE},1.3.6.1.4.1.5951.4.1.3.1.1.4,{#VSVRSTATE},1.3.6.1.4.1.5951.4.1.3.1.1.5,{#vsvrHealth},1.3.6.1.4.1.5951.4.1.3.1.1.62]</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>fd3eed910e0d4d7c9e05d22d9d717007</uuid>
+                            <name>vServer Health on {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>NS-ROOT-MIB::vsvrHealth.{#SNMPINDEX}</snmp_oid>
+                            <key>netscaler.vs.health[{#SNMPINDEX}]</key>
+                            <value_type>FLOAT</value_type>
+                            <description>Current % of UP hosts</description>
+                            <tags>
+                                <tag>
+                                    <tag>netscaler</tag>
+                                    <value>health</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>2fd821223e6e4368ab9e1e371966082b</uuid>
+                                    <expression>last(/Netscaler/netscaler.vs.health[{#SNMPINDEX}])&lt;100 and last(/Netscaler/netscaler.vs.health[{#SNMPINDEX}])&gt;1</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>last(/Netscaler/netscaler.vs.health[{#SNMPINDEX}])=100</recovery_expression>
+                                    <name>vServer Health on {#SNMPINDEX}: Degraded</name>
+                                    <opdata>Current % of UP hosts:{ITEM.LASTVALUE1}</opdata>
+                                    <priority>WARNING</priority>
+                                    <tags>
+                                        <tag>
+                                            <tag>netscaler</tag>
+                                            <value>health</value>
+                                        </tag>
+                                    </tags>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <uuid>d06f218f7b9c40818fb5f46284805450</uuid>
+                                    <expression>last(/Netscaler/netscaler.vs.health[{#SNMPINDEX}])=0</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>last(/Netscaler/netscaler.vs.health[{#SNMPINDEX}])&gt;0</recovery_expression>
+                                    <name>vServer Health on {#SNMPINDEX}: DOWN</name>
+                                    <opdata>Current % of UP hosts:{ITEM.LASTVALUE1}</opdata>
+                                    <priority>AVERAGE</priority>
+                                    <tags>
+                                        <tag>
+                                            <tag>netscaler</tag>
+                                            <value>health</value>
+                                        </tag>
+                                    </tags>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>506c155820f64964bead0b7a123a1294</uuid>
+                            <name>vServer State on {#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>NS-ROOT-MIB::vsvrState.{#SNMPINDEX}</snmp_oid>
+                            <key>netscaler.vs.state[{#SNMPINDEX}]</key>
+                            <value_type>FLOAT</value_type>
+                            <description>Current state</description>
+                            <valuemap>
+                                <name>NS-ROOT-MIB::vsvrState</name>
+                            </valuemap>
+                            <tags>
+                                <tag>
+                                    <tag>netscaler</tag>
+                                    <value>state</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>665d095d02f54e3987f7a7e85f25f9c4</uuid>
+                                    <expression>last(/Netscaler/netscaler.vs.state[{#SNMPINDEX}])&lt;&gt;7</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>last(/Netscaler/netscaler.vs.state[{#SNMPINDEX}])=7</recovery_expression>
+                                    <name>vServer State on {#SNMPINDEX}</name>
+                                    <opdata>Current state:{ITEM.LASTVALUE1}</opdata>
+                                    <priority>WARNING</priority>
+                                    <tags>
+                                        <tag>
+                                            <tag>netscaler</tag>
+                                            <value>state</value>
+                                        </tag>
+                                    </tags>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <valuemaps>
+                <valuemap>
+                    <uuid>b35d0bc5060c42299005f474e302aebe</uuid>
+                    <name>NS-ROOT-MIB::vsvrState</name>
+                    <mappings>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>2</value>
+                            <newvalue>unknown</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>3</value>
+                            <newvalue>busy</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>4</value>
+                            <newvalue>outOfService</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>5</value>
+                            <newvalue>transitionToOutOfService</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>6</value>
+                            <newvalue>unknown</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>7</value>
+                            <newvalue>up</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>8</value>
+                            <newvalue>transitionToOutOfServiceDown</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
+        </template>
+    </templates>
+</zabbix_export>
